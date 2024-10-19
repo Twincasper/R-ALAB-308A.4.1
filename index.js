@@ -11,8 +11,7 @@ const progressBar = document.getElementById("progressBar");
 const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
-const API_KEY =
-  "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi";
+const API_KEY = process.env.API_KEY;
 
 /**
  * 1. Create an async function "initialLoad" that does the following:
@@ -24,15 +23,46 @@ const API_KEY =
  * This function should execute immediately.
  */
 
-const initialLoad = async () => {
-  const response = await fetch("https://api.thecatapi.com/v1/breeds/");
-  console.log(response);
-  const isJson = (response.headers.get("content-type") || "").includes(
-    "application/json"
-  );
-  let data = isJson ? await response.json() : await response.text();
-  console.log(data);
+const fetchData = async (url, options = {}) => {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(
+        `Fetch failed. ${response.status} ${response.statusText}`
+      );
+    }
+    const isJson = (response.headers.get("content-type") || "").includes(
+      "application/json"
+    );
+    let data = isJson ? await response.json() : await response.text();
+    return [data, null];
+  } catch (error) {
+    console.error(error.message);
+    return [null, error];
+  }
 };
+
+const initialLoad = async () => {
+  const [data, error] = await fetchData("https://api.thecatapi.com/v1/breeds/", {
+    headers: {
+      "x-api-key": API_KEY,
+    }
+  });
+
+  if (error) {
+    console.error("Failed to load breeds:", error);
+    return;
+  }
+
+  data.forEach((breed) => {
+    const option = document.createElement("option");
+    option.value = breed.id;
+    option.textContent = breed.name;
+    breedSelect.appendChild(option);
+  });
+};
+
+initialLoad();
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
