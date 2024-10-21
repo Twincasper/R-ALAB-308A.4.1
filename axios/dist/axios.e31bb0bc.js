@@ -12273,6 +12273,26 @@ var axiosInstance = _axios.default.create({
     "x-api-key": "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi"
   }
 });
+axiosInstance.interceptors.request.use(function (config) {
+  console.log("Request sent:", config.url);
+  document.body.style.cursor = "progress";
+  progressBar.style.width = "0%";
+  return config;
+});
+axiosInstance.interceptors.response.use(function (response) {
+  console.log("Response received:", response.config.url);
+  document.body.style.cursor = "default";
+  progressBar.style.width = "100%";
+  return response;
+}, function (error) {
+  document.body.style.cursor = "default";
+  progressBar.style.width = "0%";
+  return Promise.reject(error);
+});
+var updateProgress = function updateProgress(progressEvent) {
+  var percentCompleted = Math.round(progressEvent.loaded * 100 / progressEvent.total);
+  progressBar.style.width = "".concat(percentCompleted, "%");
+};
 var breedData = null;
 var fetchBreeds = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -12281,7 +12301,9 @@ var fetchBreeds = /*#__PURE__*/function () {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return axiosInstance.get("/breeds/");
+          return axiosInstance.get("/breeds/", {
+            onDownloadProgress: updateProgress
+          });
         case 2:
           response = _context.sent;
           return _context.abrupt("return", response.status === 200 ? response.data : []);

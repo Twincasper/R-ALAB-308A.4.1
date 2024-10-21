@@ -18,10 +18,35 @@ const axiosInstance = axios.create({
   },
 });
 
+axiosInstance.interceptors.request.use((config) => {
+  console.log("Request sent:", config.url);
+  document.body.style.cursor = "progress";
+  progressBar.style.width = "0%";
+  return config;
+});
+
+axiosInstance.interceptors.response.use((response) => {
+  console.log("Response received:", response.config.url);
+  document.body.style.cursor = "default";
+  progressBar.style.width = "100%";
+  return response;
+}, (error) => {
+  document.body.style.cursor = "default";
+  progressBar.style.width = "0%";
+  return Promise.reject(error);
+});
+
+const updateProgress = (progressEvent) => {
+  const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+  progressBar.style.width = `${percentCompleted}%`;
+};
+
 let breedData = null;
 
 const fetchBreeds = async () => {
-  const response = await axiosInstance.get("/breeds/");
+  const response = await axiosInstance.get("/breeds/", {
+    onDownloadProgress: updateProgress
+  });
   return response.status === 200 ? response.data : [];
 }
 
@@ -139,6 +164,7 @@ initialLoad();
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
 
+
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
  * - The progressBar element has already been created for you.
@@ -154,6 +180,7 @@ initialLoad();
  *   once or twice per request to this API. This is still a concept worth familiarizing yourself
  *   with for future projects.
  */
+ 
 
 /**
  * 7. As a final element of progress indication, add the following to your axios interceptors:
