@@ -18,6 +18,8 @@ const axiosInstance = axios.create({
   },
 });
 
+
+
 axiosInstance.interceptors.request.use((config) => {
   console.log("Request sent:", config.url);
   document.body.style.cursor = "progress";
@@ -198,9 +200,25 @@ initialLoad();
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
+
+/*
+  "image_id":"id of the image",
+  "sub_id":"optional unique id of your user"
+
+  Probably need to grab the id of the image from the carousel, in other words the id of the event.target since createCarouselItem() returns a new element with that heart favourite is an event listener on.
+  processBreed gives you the id of the image, so that may help
+  https://api.thecatapi.com/v1/favourites is the api to post to favourites
+*/
+
+let subId = 'user-123'
 export async function favourite(imgId) {
-  // your code here
+  await axiosInstance.post("/favourites", {
+    image_id: imgId,
+    sub_id: subId,
+    "x-api-key": process.env.API_KEY,
+  });
 }
+
 
 /**
  * 9. Test your favourite() function by creating a getFavourites() function.
