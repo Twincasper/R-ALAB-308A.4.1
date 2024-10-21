@@ -12204,6 +12204,7 @@ var progressBar = document.getElementById("progressBar");
 var getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
+
 var API_KEY = "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi";
 var BASE_URL = "https://api.thecatapi.com/v1";
 console.log("base url:", BASE_URL);
