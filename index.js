@@ -11,18 +11,56 @@ const progressBar = document.getElementById("progressBar");
 const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
+
 const API_KEY = process.env.API_KEY;
 const BASE_URL = process.env.BASE_URL;
 
-/**
- * 1. Create an async function "initialLoad" that does the following:
- * - Retrieve a list of breeds from the cat API using fetch().
- * - https://api.thecatapi.com/v1/breeds/
- * - Create new <options> for each of these breeds, and append them to breedSelect.
- *  - Each option should have a value attribute equal to the id of the breed.
- *  - Each option should display text equal to the name of the breed.
- * This function should execute immediately.
- */
+console.log("base url:", BASE_URL);
+
+let breedData = null;
+
+const fetchData = async (url, options = {}) => {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(
+        `Fetch failed. ${response.status} ${response.statusText}`
+      );
+    }
+    const isJson = (response.headers.get("content-type") || "").includes(
+      "application/json"
+    );
+    let data = isJson ? await response.json() : await response.text();
+    return [data, null];
+  } catch (error) {
+    console.error(error.message);
+    return [null, error];
+  }
+};
+
+const initialLoad = async () => {
+  const [data, error] = await fetchData("https://api.thecatapi.com/v1/breeds/", {
+    headers: {
+      "x-api-key": API_KEY,
+    }
+  });
+
+  if (error) {
+    console.error("Failed to load breeds:", error);
+    return;
+  }
+
+  breedData = data;
+
+  data.forEach((breed) => {
+    const option = document.createElement("option");
+    option.value = breed.id;
+    option.textContent = breed.name;
+    breedSelect.appendChild(option);
+  });
+
+  breedSelection();
+};
 
 const fetchData = async (url, options = {}) => {
   try {
@@ -80,6 +118,7 @@ initialLoad();
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
 
+<<<<<<< HEAD
 breedSelect.addEventListener("change", async (event) => {
   const chosenBreed = event.target.value;
 
@@ -114,6 +153,75 @@ breedSelect.addEventListener("change", async (event) => {
 });
 
 breedSelect.dispatchEvent(new Event("change", { bubbles: true }));
+=======
+// Need to fix bootstraps carousel so it actually goes through the images
+
+async function breedSelection() {
+  const selectedBreedId = breedSelect.value;
+
+  try {
+    const breedInfo = await fetchInfo(selectedBreedId);
+
+    Carousel.clear();
+    processBreed(breedInfo, selectedBreedId);
+    Carousel.start();
+  } catch (error) {
+    console.error("Error loading breed information:", error);
+  }
+}
+
+async function fetchInfo(selectedBreedId) {
+  const response = await fetch(
+    `${BASE_URL}/images/search?breed_ids=${selectedBreedId}&limit=10`,
+    {
+      headers: {
+        "x-api-key": API_KEY
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch breed information: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+function processBreed(breedInfo, selectedBreedId) {
+  infoDump.innerHTML = '';
+
+  const selectedBreed = breedData.find(breed => breed.id === selectedBreedId);
+
+  breedInfo.forEach((info) => {
+    const carouselItem = Carousel.createCarouselItem(
+      info.url,
+      selectedBreed ? selectedBreed.name : "Unknown Breed",
+      info.id
+    );
+    Carousel.appendCarousel(carouselItem);
+  });
+
+  if (selectedBreed) {
+    const infoElement = createInfoElement(selectedBreed);
+    infoDump.appendChild(infoElement);
+  } else {
+    console.warn("Breed information is missing for this image.");
+  }
+}
+function createInfoElement(breedInfo) {
+  const infoElement = document.createElement("div");
+  infoElement.innerHTML = `
+    <h2>${breedInfo.name}</h2>
+    <p>Description: ${breedInfo.description}</p>
+    <p>Origin: ${breedInfo.origin}</p>
+  `;
+  return infoElement;
+}
+
+breedSelect.addEventListener("change", breedSelection);
+
+initialLoad();
+>>>>>>> efb4a9453aa4b9122cf1595dd7f03c9fcc9242a7
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
