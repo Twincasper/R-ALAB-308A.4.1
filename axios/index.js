@@ -296,8 +296,6 @@ const getFavourites = async () => {
       }
     });
 
-    console.log(response.data);
-
     Carousel.clear();
 
     response.data.forEach((favourite) => {

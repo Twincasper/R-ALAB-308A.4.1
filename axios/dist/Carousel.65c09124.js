@@ -12584,24 +12584,23 @@ var getFavourites = /*#__PURE__*/function () {
           });
         case 3:
           response = _context4.sent;
-          console.log(response.data);
           Carousel.clear();
           response.data.forEach(function (favourite) {
             var carouselItem = Carousel.createCarouselItem(favourite.image.url, "One of my favorite cats", favourite.id);
             Carousel.appendCarousel(carouselItem);
           });
           Carousel.start();
-          _context4.next = 13;
+          _context4.next = 12;
           break;
-        case 10:
-          _context4.prev = 10;
+        case 9:
+          _context4.prev = 9;
           _context4.t0 = _context4["catch"](0);
           console.error("Failed to fetch favourites:", _context4.t0);
-        case 13:
+        case 12:
         case "end":
           return _context4.stop();
       }
-    }, _callee4, null, [[0, 10]]);
+    }, _callee4, null, [[0, 9]]);
   }));
   return function getFavourites() {
     return _ref4.apply(this, arguments);
