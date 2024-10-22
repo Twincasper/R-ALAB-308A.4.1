@@ -12377,32 +12377,32 @@ function breedSelection() {
   return _breedSelection.apply(this, arguments);
 }
 function _breedSelection() {
-  _breedSelection = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+  _breedSelection = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
     var selectedBreedId, breedInfo;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
         case 0:
           selectedBreedId = breedSelect.value;
           console.log("Selected breed:", selectedBreedId);
-          _context4.prev = 2;
-          _context4.next = 5;
+          _context5.prev = 2;
+          _context5.next = 5;
           return fetchInfo(selectedBreedId);
         case 5:
-          breedInfo = _context4.sent;
+          breedInfo = _context5.sent;
           Carousel.clear();
           processBreed(breedInfo, selectedBreedId);
           Carousel.start();
-          _context4.next = 14;
+          _context5.next = 14;
           break;
         case 11:
-          _context4.prev = 11;
-          _context4.t0 = _context4["catch"](2);
-          console.error("Error loading breed information:", _context4.t0);
+          _context5.prev = 11;
+          _context5.t0 = _context5["catch"](2);
+          console.error("Error loading breed information:", _context5.t0);
         case 14:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
-    }, _callee4, null, [[2, 11]]);
+    }, _callee5, null, [[2, 11]]);
   }));
   return _breedSelection.apply(this, arguments);
 }
@@ -12410,27 +12410,27 @@ function fetchInfo(_x) {
   return _fetchInfo.apply(this, arguments);
 }
 function _fetchInfo() {
-  _fetchInfo = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(selectedBreedId) {
+  _fetchInfo = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(selectedBreedId) {
     var response;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
         case 0:
-          _context5.prev = 0;
-          _context5.next = 3;
+          _context6.prev = 0;
+          _context6.next = 3;
           return axiosInstance.get("/images/search?breed_ids=".concat(selectedBreedId, "&limit=10"));
         case 3:
-          response = _context5.sent;
-          return _context5.abrupt("return", response.data);
+          response = _context6.sent;
+          return _context6.abrupt("return", response.data);
         case 7:
-          _context5.prev = 7;
-          _context5.t0 = _context5["catch"](0);
-          console.error("Failed to fetch breed information: ".concat(_context5.t0.message));
-          throw _context5.t0;
+          _context6.prev = 7;
+          _context6.t0 = _context6["catch"](0);
+          console.error("Failed to fetch breed information: ".concat(_context6.t0.message));
+          throw _context6.t0;
         case 11:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
-    }, _callee5, null, [[0, 7]]);
+    }, _callee6, null, [[0, 7]]);
   }));
   return _fetchInfo.apply(this, arguments);
 }
@@ -12544,8 +12544,36 @@ initialLoad();
   https://api.thecatapi.com/v1/favourites is the api to post to favourites
 */
 
+var deleteFavourite = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(favouriteId) {
+    var response;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.prev = 0;
+          _context3.next = 3;
+          return axiosInstance.delete("/favourites/".concat(favouriteId));
+        case 3:
+          response = _context3.sent;
+          console.log("Deleted favourite", response);
+          return _context3.abrupt("return", response);
+        case 8:
+          _context3.prev = 8;
+          _context3.t0 = _context3["catch"](0);
+          console.error("Failed to delete favourite:", _context3.t0);
+          throw _context3.t0;
+        case 12:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3, null, [[0, 8]]);
+  }));
+  return function deleteFavourite(_x2) {
+    return _ref3.apply(this, arguments);
+  };
+}();
 var subId = 'my-user-1234';
-function favourite(_x2) {
+function favourite(_x3) {
   return _favourite.apply(this, arguments);
 }
 /**
@@ -12558,31 +12586,65 @@ function favourite(_x2) {
  *    repeat yourself in this section.
  */
 function _favourite() {
-  _favourite = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(imgId) {
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
+  _favourite = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(imgId) {
+    var favouritesResponse, favourites, existingFavourite, response;
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+      while (1) switch (_context7.prev = _context7.next) {
         case 0:
-          _context6.next = 2;
+          _context7.prev = 0;
+          _context7.next = 3;
+          return axiosInstance.get("/favourites", {
+            params: {
+              sub_id: subId
+            }
+          });
+        case 3:
+          favouritesResponse = _context7.sent;
+          favourites = favouritesResponse.data;
+          existingFavourite = favourites.find(function (fav) {
+            return fav.image_id === imgId;
+          });
+          if (!existingFavourite) {
+            _context7.next = 11;
+            break;
+          }
+          _context7.next = 9;
+          return deleteFavourite(existingFavourite.id);
+        case 9:
+          _context7.next = 15;
+          break;
+        case 11:
+          _context7.next = 13;
           return axiosInstance.post("/favourites", {
             image_id: imgId,
             sub_id: subId
           });
-        case 2:
+        case 13:
+          response = _context7.sent;
+          console.log("Added to favourites", response);
+        case 15:
+          _context7.next = 20;
+          break;
+        case 17:
+          _context7.prev = 17;
+          _context7.t0 = _context7["catch"](0);
+          console.error("Failed to toggle favourite:", _context7.t0);
+        case 20:
         case "end":
-          return _context6.stop();
+          return _context7.stop();
       }
-    }, _callee6);
+    }, _callee7, null, [[0, 17]]);
   }));
   return _favourite.apply(this, arguments);
 }
 var getFavourites = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var response;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
-          _context3.prev = 0;
-          _context3.next = 3;
+          _context4.prev = 0;
+          _context4.next = 3;
           return axiosInstance.get("/favourites", {
             params: {
               sub_id: subId,
@@ -12590,7 +12652,7 @@ var getFavourites = /*#__PURE__*/function () {
             }
           });
         case 3:
-          response = _context3.sent;
+          response = _context4.sent;
           console.log(response.data);
           Carousel.clear();
           response.data.forEach(function (favourite) {
@@ -12598,20 +12660,20 @@ var getFavourites = /*#__PURE__*/function () {
             Carousel.appendCarousel(carouselItem);
           });
           Carousel.start();
-          _context3.next = 13;
+          _context4.next = 13;
           break;
         case 10:
-          _context3.prev = 10;
-          _context3.t0 = _context3["catch"](0);
-          console.error("Failed to fetch favourites:", _context3.t0);
+          _context4.prev = 10;
+          _context4.t0 = _context4["catch"](0);
+          console.error("Failed to fetch favourites:", _context4.t0);
         case 13:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3, null, [[0, 10]]);
+    }, _callee4, null, [[0, 10]]);
   }));
   return function getFavourites() {
-    return _ref3.apply(this, arguments);
+    return _ref4.apply(this, arguments);
   };
 }();
 getFavouritesBtn.addEventListener("click", getFavourites);

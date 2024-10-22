@@ -238,12 +238,42 @@ initialLoad();
   https://api.thecatapi.com/v1/favourites is the api to post to favourites
 */
 
-let subId = 'my-user-1234'
+const deleteFavourite = async (favouriteId) => {
+  try {
+    const response = await axiosInstance.delete(`/favourites/${favouriteId}`);
+    console.log("Deleted favourite", response);
+    return response;
+  } catch (error) {
+    console.error("Failed to delete favourite:", error);
+    throw error;
+  }
+};
+
+let subId = 'my-user-1234';
+
 export async function favourite(imgId) {
-  await axiosInstance.post("/favourites", {
-    image_id: imgId,
-    sub_id: subId,
-  });
+  try {
+    const favouritesResponse = await axiosInstance.get("/favourites", {
+      params: {
+        sub_id: subId,
+      },
+    });
+
+    const favourites = favouritesResponse.data;
+    const existingFavourite = favourites.find(fav => fav.image_id === imgId);
+
+    if (existingFavourite) {
+      await deleteFavourite(existingFavourite.id);
+    } else {
+      const response = await axiosInstance.post("/favourites", {
+        image_id: imgId,
+        sub_id: subId,
+      });
+      console.log("Added to favourites", response);
+    }
+  } catch (error) {
+    console.error("Failed to toggle favourite:", error);
+  }
 }
 
 
