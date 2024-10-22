@@ -12377,32 +12377,32 @@ function breedSelection() {
   return _breedSelection.apply(this, arguments);
 }
 function _breedSelection() {
-  _breedSelection = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  _breedSelection = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var selectedBreedId, breedInfo;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
           selectedBreedId = breedSelect.value;
           console.log("Selected breed:", selectedBreedId);
-          _context3.prev = 2;
-          _context3.next = 5;
+          _context4.prev = 2;
+          _context4.next = 5;
           return fetchInfo(selectedBreedId);
         case 5:
-          breedInfo = _context3.sent;
+          breedInfo = _context4.sent;
           Carousel.clear();
           processBreed(breedInfo, selectedBreedId);
           Carousel.start();
-          _context3.next = 14;
+          _context4.next = 14;
           break;
         case 11:
-          _context3.prev = 11;
-          _context3.t0 = _context3["catch"](2);
-          console.error("Error loading breed information:", _context3.t0);
+          _context4.prev = 11;
+          _context4.t0 = _context4["catch"](2);
+          console.error("Error loading breed information:", _context4.t0);
         case 14:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3, null, [[2, 11]]);
+    }, _callee4, null, [[2, 11]]);
   }));
   return _breedSelection.apply(this, arguments);
 }
@@ -12410,27 +12410,27 @@ function fetchInfo(_x) {
   return _fetchInfo.apply(this, arguments);
 }
 function _fetchInfo() {
-  _fetchInfo = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(selectedBreedId) {
+  _fetchInfo = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(selectedBreedId) {
     var response;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
         case 0:
-          _context4.prev = 0;
-          _context4.next = 3;
+          _context5.prev = 0;
+          _context5.next = 3;
           return axiosInstance.get("/images/search?breed_ids=".concat(selectedBreedId, "&limit=10"));
         case 3:
-          response = _context4.sent;
-          return _context4.abrupt("return", response.data);
+          response = _context5.sent;
+          return _context5.abrupt("return", response.data);
         case 7:
-          _context4.prev = 7;
-          _context4.t0 = _context4["catch"](0);
-          console.error("Failed to fetch breed information: ".concat(_context4.t0.message));
-          throw _context4.t0;
+          _context5.prev = 7;
+          _context5.t0 = _context5["catch"](0);
+          console.error("Failed to fetch breed information: ".concat(_context5.t0.message));
+          throw _context5.t0;
         case 11:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
-    }, _callee4, null, [[0, 7]]);
+    }, _callee5, null, [[0, 7]]);
   }));
   return _fetchInfo.apply(this, arguments);
 }
@@ -12557,6 +12557,65 @@ function favourite(_x2) {
  *    If that isn't in its own function, maybe it should be so you don't have to
  *    repeat yourself in this section.
  */
+function _favourite() {
+  _favourite = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(imgId) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.next = 2;
+          return axiosInstance.post("/favourites", {
+            image_id: imgId,
+            sub_id: subId
+          });
+        case 2:
+        case "end":
+          return _context6.stop();
+      }
+    }, _callee6);
+  }));
+  return _favourite.apply(this, arguments);
+}
+var getFavourites = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var response;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.prev = 0;
+          _context3.next = 3;
+          return axiosInstance.get("/favourites", {
+            params: {
+              sub_id: subId,
+              order: "DESC"
+            }
+          });
+        case 3:
+          response = _context3.sent;
+          console.log(response.data);
+          Carousel.clear();
+          response.data.forEach(function (favourite) {
+            var carouselItem = Carousel.createCarouselItem(favourite.image.url, "One of my favorite cats", favourite.id);
+            Carousel.appendCarousel(carouselItem);
+          });
+          Carousel.start();
+          _context3.next = 13;
+          break;
+        case 10:
+          _context3.prev = 10;
+          _context3.t0 = _context3["catch"](0);
+          console.error("Failed to fetch favourites:", _context3.t0);
+        case 13:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3, null, [[0, 10]]);
+  }));
+  return function getFavourites() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+getFavouritesBtn.addEventListener("click", getFavourites);
+
 /**
  * 10. Test your site, thoroughly!
  * - What happens when you try to load the Malayan breed?
@@ -12564,24 +12623,6 @@ function favourite(_x2) {
  * - Test other breeds as well. Not every breed has the same data available, so
  *   your code should account for this.
  */
-function _favourite() {
-  _favourite = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(imgId) {
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          _context5.next = 2;
-          return axiosInstance.post("/favourites", {
-            image_id: imgId,
-            sub_id: subId
-          });
-        case 2:
-        case "end":
-          return _context5.stop();
-      }
-    }, _callee5);
-  }));
-  return _favourite.apply(this, arguments);
-}
 },{"./Carousel.js":"Carousel.js","axios":"node_modules/axios/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -12607,7 +12648,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59685" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60977" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

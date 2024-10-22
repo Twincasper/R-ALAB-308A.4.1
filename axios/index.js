@@ -257,6 +257,36 @@ export async function favourite(imgId) {
  *    repeat yourself in this section.
  */
 
+const getFavourites = async () => {
+  try {
+    const response = await axiosInstance.get("/favourites", {
+      params: {
+        sub_id: subId,
+        order: "DESC"
+      }
+    });
+
+    console.log(response.data);
+
+    Carousel.clear();
+
+    response.data.forEach((favourite) => {
+      const carouselItem = Carousel.createCarouselItem(
+        favourite.image.url,
+        "One of my favorite cats",
+        favourite.id
+      );
+      Carousel.appendCarousel(carouselItem);
+    });
+
+    Carousel.start();
+  } catch (error) {
+    console.error("Failed to fetch favourites:", error);
+  }
+};
+
+getFavouritesBtn.addEventListener("click", getFavourites);
+
 /**
  * 10. Test your site, thoroughly!
  * - What happens when you try to load the Malayan breed?
