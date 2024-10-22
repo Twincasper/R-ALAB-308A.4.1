@@ -12268,11 +12268,14 @@ var getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
 var axiosInstance = _axios.default.create({
-  baseURL: "https://api.thecatapi.com/v1",
+  baseURL: "https://api.thedogapi.com/v1",
   headers: {
-    "x-api-key": "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi"
+    "x-api-key": "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi",
+    "Content-Type": "application/json; charset=utf-8"
   }
 });
+console.log("base url:", "https://api.thedogapi.com/v1");
+console.log("api key:", "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi");
 axiosInstance.interceptors.request.use(function (config) {
   console.log("Request sent:", config.url);
   document.body.style.cursor = "progress";
@@ -12306,8 +12309,9 @@ var fetchBreeds = /*#__PURE__*/function () {
           });
         case 2:
           response = _context.sent;
+          console.log("Breeds fetched:", response.data);
           return _context.abrupt("return", response.status === 200 ? response.data : []);
-        case 4:
+        case 5:
         case "end":
           return _context.stop();
       }
@@ -12379,25 +12383,26 @@ function _breedSelection() {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
           selectedBreedId = breedSelect.value;
-          _context3.prev = 1;
-          _context3.next = 4;
+          console.log("Selected breed:", selectedBreedId);
+          _context3.prev = 2;
+          _context3.next = 5;
           return fetchInfo(selectedBreedId);
-        case 4:
+        case 5:
           breedInfo = _context3.sent;
           Carousel.clear();
           processBreed(breedInfo, selectedBreedId);
           Carousel.start();
-          _context3.next = 13;
+          _context3.next = 14;
           break;
-        case 10:
-          _context3.prev = 10;
-          _context3.t0 = _context3["catch"](1);
+        case 11:
+          _context3.prev = 11;
+          _context3.t0 = _context3["catch"](2);
           console.error("Error loading breed information:", _context3.t0);
-        case 13:
+        case 14:
         case "end":
           return _context3.stop();
       }
-    }, _callee3, null, [[1, 10]]);
+    }, _callee3, null, [[2, 11]]);
   }));
   return _breedSelection.apply(this, arguments);
 }
@@ -12431,9 +12436,11 @@ function _fetchInfo() {
 }
 function processBreed(breedInfo, selectedBreedId) {
   infoDump.innerHTML = '';
+  console.log("Breed id for processBreed:", selectedBreedId);
   var selectedBreed = breedData.find(function (breed) {
-    return breed.id === selectedBreedId;
+    return breed.id === Number(selectedBreedId);
   });
+  console.log(selectedBreed, "selectedBreed after find method");
   breedInfo.forEach(function (info) {
     var carouselItem = Carousel.createCarouselItem(info.url, selectedBreed ? selectedBreed.name : "Unknown Breed", info.id);
     Carousel.appendCarousel(carouselItem);
@@ -12442,12 +12449,35 @@ function processBreed(breedInfo, selectedBreedId) {
     var infoElement = createInfoElement(selectedBreed);
     infoDump.appendChild(infoElement);
   } else {
+    console.log(selectedBreed, "breed information is missing.");
     console.warn("Breed information is missing for this image.");
   }
 }
 function createInfoElement(breedInfo) {
   var infoElement = document.createElement("div");
-  infoElement.innerHTML = "\n    <h2>".concat(breedInfo.name, "</h2>\n    <p>Description: ").concat(breedInfo.description, "</p>\n    <p>Origin: ").concat(breedInfo.origin, "</p>\n  ");
+  var content = "<h2>".concat(breedInfo.name, "</h2>");
+  if (breedInfo.origin) {
+    content += "<p><strong>Origin:</strong> ".concat(breedInfo.origin, "</p>");
+  }
+  if (breedInfo.temperament) {
+    content += "<p><strong>Temperament:</strong> ".concat(breedInfo.temperament, "</p>");
+  }
+  if (breedInfo.bred_for) {
+    content += "<p><strong>Bred For:</strong> ".concat(breedInfo.bred_for, "</p>");
+  }
+  if (breedInfo.breed_group) {
+    content += "<p><strong>Breed Group:</strong> ".concat(breedInfo.breed_group, "</p>");
+  }
+  if (breedInfo.life_span) {
+    content += "<p><strong>Life Span:</strong> ".concat(breedInfo.life_span, "</p>");
+  }
+  if (breedInfo.height && breedInfo.height.imperial && breedInfo.height.metric) {
+    content += "<p><strong>Height:</strong> ".concat(breedInfo.height.imperial, " inches (").concat(breedInfo.height.metric, " cm)</p>");
+  }
+  if (breedInfo.weight && breedInfo.weight.imperial && breedInfo.weight.metric) {
+    content += "<p><strong>Weight:</strong> ".concat(breedInfo.weight.imperial, " lbs (").concat(breedInfo.weight.metric, " kg)</p>");
+  }
+  infoElement.innerHTML = content;
   return infoElement;
 }
 breedSelect.addEventListener("change", breedSelection);
@@ -12514,7 +12544,7 @@ initialLoad();
   https://api.thecatapi.com/v1/favourites is the api to post to favourites
 */
 
-var subId = 'user-123';
+var subId = 'my-user-1234';
 function favourite(_x2) {
   return _favourite.apply(this, arguments);
 }
@@ -12542,8 +12572,7 @@ function _favourite() {
           _context5.next = 2;
           return axiosInstance.post("/favourites", {
             image_id: imgId,
-            sub_id: subId,
-            "x-api-key": "live_r4fgoCfYYtM7C7GDwB1r6FhOWoXofw3eQAStnt3oO3ITPGB3TBM30YoAStGlKXoi"
+            sub_id: subId
           });
         case 2:
         case "end":
@@ -12578,7 +12607,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56090" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59685" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

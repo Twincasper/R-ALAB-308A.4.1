@@ -19,6 +19,8 @@ const axiosInstance = axios.create({
   },
 });
 
+console.log("base url:", process.env.BASE_URL);
+console.log("api key:", process.env.API_KEY);
 
 
 axiosInstance.interceptors.request.use((config) => {
@@ -50,6 +52,7 @@ const fetchBreeds = async () => {
   const response = await axiosInstance.get("/breeds/", {
     onDownloadProgress: updateProgress
   });
+  console.log("Breeds fetched:", response.data);
   return response.status === 200 ? response.data : [];
 }
 
@@ -91,6 +94,7 @@ const initialLoad = async () => {
 
 async function breedSelection() {
   const selectedBreedId = breedSelect.value;
+  console.log("Selected breed:", selectedBreedId);
 
   try {
     const breedInfo = await fetchInfo(selectedBreedId);
@@ -115,8 +119,10 @@ async function fetchInfo(selectedBreedId) {
 
 function processBreed(breedInfo, selectedBreedId) {
   infoDump.innerHTML = '';
+  console.log("Breed id for processBreed:", selectedBreedId);
 
-  const selectedBreed = breedData.find(breed => breed.id === selectedBreedId);
+  const selectedBreed = breedData.find(breed => breed.id === Number(selectedBreedId));
+  console.log(selectedBreed, "selectedBreed after find method");
 
   breedInfo.forEach((info) => {
     const carouselItem = Carousel.createCarouselItem(
@@ -131,16 +137,37 @@ function processBreed(breedInfo, selectedBreedId) {
     const infoElement = createInfoElement(selectedBreed);
     infoDump.appendChild(infoElement);
   } else {
+    console.log(selectedBreed, "breed information is missing.");
     console.warn("Breed information is missing for this image.");
   }
 }
 function createInfoElement(breedInfo) {
   const infoElement = document.createElement("div");
-  infoElement.innerHTML = `
-    <h2>${breedInfo.name}</h2>
-    <p>Description: ${breedInfo.description}</p>
-    <p>Origin: ${breedInfo.origin}</p>
-  `;
+  let content = `<h2>${breedInfo.name}</h2>`;
+
+  if (breedInfo.origin) {
+    content += `<p><strong>Origin:</strong> ${breedInfo.origin}</p>`;
+  }
+  if (breedInfo.temperament) {
+    content += `<p><strong>Temperament:</strong> ${breedInfo.temperament}</p>`;
+  }
+  if (breedInfo.bred_for) {
+    content += `<p><strong>Bred For:</strong> ${breedInfo.bred_for}</p>`;
+  }
+  if (breedInfo.breed_group) {
+    content += `<p><strong>Breed Group:</strong> ${breedInfo.breed_group}</p>`;
+  }
+  if (breedInfo.life_span) {
+    content += `<p><strong>Life Span:</strong> ${breedInfo.life_span}</p>`;
+  }
+  if (breedInfo.height && breedInfo.height.imperial && breedInfo.height.metric) {
+    content += `<p><strong>Height:</strong> ${breedInfo.height.imperial} inches (${breedInfo.height.metric} cm)</p>`;
+  }
+  if (breedInfo.weight && breedInfo.weight.imperial && breedInfo.weight.metric) {
+    content += `<p><strong>Weight:</strong> ${breedInfo.weight.imperial} lbs (${breedInfo.weight.metric} kg)</p>`;
+  }
+
+  infoElement.innerHTML = content;
   return infoElement;
 }
 
